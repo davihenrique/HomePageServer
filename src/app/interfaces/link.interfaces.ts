@@ -4,6 +4,7 @@ export interface Link {
   port: string;
   description?: string;
   https?: boolean;
+  icon?: string;
 }
 
 export interface Service {
@@ -11,4 +12,5 @@ export interface Service {
   title: string;
   link: string;
   description: string;
+  icon: string;
 }

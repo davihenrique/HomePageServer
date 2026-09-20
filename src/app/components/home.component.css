@@ -17,12 +17,35 @@
 }
 .card-link {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  /* flex-start mantem todos os icones na mesma coluna: com center, a margem
+     esquerda vira sobra do texto e varia de card para card. */
+  justify-content: flex-start;
+  gap: 12px;
+  /* Sem border-box o padding soma a altura, e o conjunto desce meio padding
+     abaixo do centro do card. */
+  box-sizing: border-box;
   height: 100%;
   width: 100%;
   padding: 14px;
   text-decoration: none;
   color: inherit;
+}
+
+/* O icone se alinha ao centro do bloco de texto, entao o bloco nao pode ter
+   margem sobrando de um lado so — o espacamento interno vem do gap. */
+.card-icon {
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+.card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
 }
 
 .card-link .link-title {
@@ -43,7 +66,6 @@
   font-weight: 600;
   text-decoration: none;
   display: block;
-  margin-bottom: 8px;
   font-size: 1.02rem;
 }
 .link-title:hover,

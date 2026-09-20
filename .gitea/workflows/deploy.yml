@@ -83,7 +83,7 @@ jobs:
 
           # O rsync nao cria diretorios-pai, entao a arvore precisa existir antes
           # do primeiro envio.
-          $SSH "$TARGET" "mkdir -p ~/$DEPLOY_ROOT/site ~/$DEPLOY_ROOT/data ~/.config/containers/systemd"
+          $SSH "$TARGET" "mkdir -p ~/$DEPLOY_ROOT/site ~/$DEPLOY_ROOT/data/.icons ~/.config/containers/systemd"
 
           rsync -az --delete -e "$SSH" dist/HomePage/browser/ "$TARGET:$DEPLOY_ROOT/site/"
 
@@ -91,6 +91,13 @@ jobs:
           # entao o deploy so o cria na primeira vez e nunca sobrescreve depois.
           rsync -a --ignore-existing -e "$SSH" public/data/links.json \
             "$TARGET:$DEPLOY_ROOT/data/links.json"
+
+          # Os icones tambem moram em data/, porque esse diretorio e montado por
+          # cima do site no container — o que vem so pelo build fica invisivel.
+          # Ao contrario do links.json, eles pertencem ao repositorio e sao
+          # sempre sobrescritos.
+          rsync -az --delete -e "$SSH" public/data/.icons/ \
+            "$TARGET:$DEPLOY_ROOT/data/.icons/"
 
           # O servidor web tambem vem do repositorio: sem isto, destruir o
           # container deixa o conteudo publicado sem ninguem para servi-lo.

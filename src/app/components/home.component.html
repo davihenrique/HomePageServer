@@ -17,8 +17,21 @@
       <ng-container *ngIf="services$ | async as services; else loadingOrError">
         <li *ngFor="let service of services" class="card">
           <a [href]="service.link" target="_blank" rel="noopener noreferrer" class="card-link">
-            <span class="link-title">{{ service.title }}</span>
-            <p *ngIf="service.description" class="link-desc no-select">{{ service.description }}</p>
+            <img
+              *ngIf="service.icon"
+              class="card-icon"
+              [src]="service.icon"
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              (error)="hideBrokenIcon($event)"
+            />
+            <div class="card-text">
+              <span class="link-title">{{ service.title }}</span>
+              <p *ngIf="service.description" class="link-desc no-select">
+                {{ service.description }}
+              </p>
+            </div>
           </a>
         </li>
       </ng-container>

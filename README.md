@@ -42,9 +42,14 @@ No servidor tudo fica sob `~/homepage/`:
 ~/homepage/
 |-- site/        <- o build do Angular (substituido a cada deploy)
 |-- data/
-|   `-- links.json
+|   |-- links.json   <- seu, nunca sobrescrito
+|   `-- .icons/      <- do repositorio, sobrescrito a cada deploy
 `-- nginx.conf
 ```
+
+Os icones ficam em `data/` e nao no site porque o container monta `data/` por
+cima de `/usr/share/nginx/html/data`: o que chega apenas pelo build fica
+invisivel debaixo desse mount.
 
 A unica peca fora dessa pasta e o quadlet, porque o caminho e imposto pelo
 systemd:
@@ -66,6 +71,22 @@ nano ~/homepage/data/links.json
 A mudanca vale no proximo carregamento da pagina, sem restart e sem deploy.
 O arquivo em `public/data/links.json` continua servindo ao desenvolvimento local
 e como valor inicial.
+
+## Icones
+
+Cada link aponta um icone pelo campo `icon`:
+
+```json
+{ "id": "5", "title": "Navidrome", "port": "4533", "icon": "navidrome" }
+```
+
+O valor e o nome de um arquivo em `public/data/.icons/`, sem a extensao — os
+SVGs vieram de [dashboard-icons](https://github.com/homarr-labs/dashboard-icons)
+e estao versionados aqui para que a pagina nao dependa de um CDN externo.
+
+Para um servico novo, baixe o SVG para essa pasta e use o nome do arquivo. Um
+valor comecando com `http` e usado como URL literal, caso voce prefira apontar
+para fora. Nome inexistente nao quebra o layout: o card aparece so com o texto.
 
 ## Pre-requisitos no servidor (uma vez)
 
