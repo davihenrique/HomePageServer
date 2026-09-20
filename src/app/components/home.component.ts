@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { LinksService } from '../services/links.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Link, Service } from '../interfaces/link.interfaces';
+import { Link, LinksData, Service } from '../interfaces/link.interfaces';
 
 // Os icones sao servidos junto com os dados, e nao por um CDN: a homepage
 // precisa abrir com o servidor sem acesso a internet.
@@ -17,21 +17,30 @@ const ICON_BASE = '/data/icons';
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent {
-  public services$: Observable<Service[]>;
+  public groups$: Observable<{ servidor: Service[]; externos: Service[] }>;
   private baseUrl: string = window.location.hostname;
 
   constructor(public linksService: LinksService) {
-    this.services$ = this.linksService.getLinks().pipe(
-      map((links: Link[]) =>
-        links.map((link) => ({
-          id: link.id,
-          title: link.title,
-          link: `${link.https ? 'https://' : 'http://'}${this.baseUrl}:${link.port}`,
-          description: link.description || '',
-          icon: this.iconUrl(link.icon),
-        }))
-      )
+    this.groups$ = this.linksService.getLinks().pipe(
+      map((data: LinksData) => ({
+        servidor: (data.servidor || []).map((link) => this.toService(link)),
+        externos: (data.externos || []).map((link) => this.toService(link)),
+      }))
     );
+  }
+
+  // Um link externo traz a URL pronta; um servico do servidor so traz a porta,
+  // e o host vem de onde a propria homepage esta aberta.
+  private toService(link: Link): Service {
+    return {
+      id: link.id,
+      title: link.title,
+      link: link.url
+        ? link.url
+        : `${link.https ? 'https://' : 'http://'}${this.baseUrl}:${link.port}`,
+      description: link.description || '',
+      icon: this.iconUrl(link.icon),
+    };
   }
 
   // Aceita tanto o nome de um arquivo em /data/icons quanto uma URL completa,

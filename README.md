@@ -59,6 +59,29 @@ systemd:
 | `deploy/homepage.container` | `~/.config/containers/systemd/` |
 | `deploy/nginx.conf` | `~/homepage/nginx.conf` |
 
+## Estrutura do links.json
+
+O arquivo tem dois grupos, um por secao da pagina:
+
+```json
+{
+  "servidor": [
+    { "id": "3", "title": "Gitea", "port": "3000", "icon": "gitea" }
+  ],
+  "externos": [
+    { "id": "e1", "title": "Tailscale",
+      "url": "https://console.tailscale.com/admin/machines", "icon": "tailscale" }
+  ]
+}
+```
+
+Em `servidor` voce informa so a `port` (e `https: true` quando o servico usa
+TLS): o host vem de onde a propria pagina esta aberta, entao os links continuam
+validos pelo IP da Tailscale, pelo hostname local ou por `localhost`.
+
+Em `externos` voce informa a `url` completa, porque o destino nao esta no
+servidor.
+
 ## Gerenciar os links sem rebuild
 
 `links.json` e montado por fora do site. O deploy so o cria na primeira vez

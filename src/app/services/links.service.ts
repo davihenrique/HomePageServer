@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Link } from '../interfaces/link.interfaces';
+import { LinksData } from '../interfaces/link.interfaces';
 
 @Injectable({ providedIn: 'root' })
 export class LinksService {
@@ -9,7 +9,7 @@ export class LinksService {
 
   constructor(private http: HttpClient) {}
 
-  getLinks(): Observable<Link[]> {
-    return this.http.get<Link[]>(this.linksUrl, { headers: { 'Cache-Control': 'no-store' } });
+  getLinks(): Observable<LinksData> {
+    return this.http.get<LinksData>(this.linksUrl, { headers: { 'Cache-Control': 'no-store' } });
   }
 }

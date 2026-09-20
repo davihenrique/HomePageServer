@@ -1,10 +1,17 @@
-#links-list {
+/* Usa a classe e nao o id porque ha mais de uma lista na pagina. */
+.grid {
   list-style: none;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 14px;
   margin-top: 14px;
+}
+.section-title {
+  margin: 28px 0 0 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #e6eef8;
 }
 .card {
   background: linear-gradient(180deg, #0f1724, rgba(12, 17, 28, 0.9));

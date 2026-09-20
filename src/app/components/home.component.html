@@ -12,32 +12,51 @@
     </div>
   </header>
 
-  <section id="links-section">
-    <ul id="links-list" class="grid">
-      <ng-container *ngIf="services$ | async as services; else loadingOrError">
-        <li *ngFor="let service of services" class="card">
-          <a [href]="service.link" target="_blank" rel="noopener noreferrer" class="card-link">
-            <img
-              *ngIf="service.icon"
-              class="card-icon"
-              [src]="service.icon"
-              alt=""
-              aria-hidden="true"
-              loading="lazy"
-              (error)="hideBrokenIcon($event)"
-            />
-            <div class="card-text">
-              <span class="link-title">{{ service.title }}</span>
-              <p *ngIf="service.description" class="link-desc no-select">
-                {{ service.description }}
-              </p>
-            </div>
-          </a>
-        </li>
-      </ng-container>
-      <ng-template #loadingOrError>
-        <li class="loading">Carregando...</li>
-      </ng-template>
+  <ng-container *ngIf="groups$ | async as groups; else loadingOrError">
+    <section id="links-section">
+      <ul id="links-list" class="grid">
+        <ng-container
+          *ngTemplateOutlet="cards; context: { $implicit: groups.servidor }"
+        ></ng-container>
+      </ul>
+    </section>
+
+    <section id="externos-section" *ngIf="groups.externos.length">
+      <h2 class="section-title">Links Externos</h2>
+      <ul class="grid">
+        <ng-container
+          *ngTemplateOutlet="cards; context: { $implicit: groups.externos }"
+        ></ng-container>
+      </ul>
+    </section>
+  </ng-container>
+
+  <ng-template #loadingOrError>
+    <ul class="grid">
+      <li class="loading">Carregando...</li>
     </ul>
-  </section>
+  </ng-template>
+
+  <!-- Os dois grupos usam o mesmo card, entao o markup vive em um lugar so. -->
+  <ng-template #cards let-services>
+    <li *ngFor="let service of services" class="card">
+      <a [href]="service.link" target="_blank" rel="noopener noreferrer" class="card-link">
+        <img
+          *ngIf="service.icon"
+          class="card-icon"
+          [src]="service.icon"
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          (error)="hideBrokenIcon($event)"
+        />
+        <div class="card-text">
+          <span class="link-title">{{ service.title }}</span>
+          <p *ngIf="service.description" class="link-desc no-select">
+            {{ service.description }}
+          </p>
+        </div>
+      </a>
+    </li>
+  </ng-template>
 </main>
