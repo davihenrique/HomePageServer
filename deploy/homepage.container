@@ -1,0 +1,21 @@
+# Quadlet do nginx que serve a HomePage. Instalado pelo workflow em
+# ~/.config/containers/systemd/ do usuario de deploy, para que o servidor web
+# seja reproduzivel a partir do repositorio e nao so um ajuste feito a mao.
+[Unit]
+Description=HomePage (Angular estatico, nginx rootless)
+After=network-online.target
+
+[Container]
+Image=docker.io/library/nginx:alpine
+ContainerName=homepage
+PublishPort=80:80
+Volume=%h/homepage-site:/usr/share/nginx/html:ro,Z
+# links.json vive fora do build: editar os links nao exige um novo deploy.
+Volume=%h/homepage-data:/usr/share/nginx/html/data:ro,Z
+Volume=%h/homepage-nginx.conf:/etc/nginx/conf.d/default.conf:ro,Z
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

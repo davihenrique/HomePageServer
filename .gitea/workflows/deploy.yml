@@ -1,0 +1,101 @@
+name: "Build and Deploy"
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - .gitignore
+      - README.md
+      - LICENSE
+      - docs/**
+  workflow_dispatch:
+
+concurrency:
+  group: "homepage"
+  cancel-in-progress: true
+
+env:
+  DEPLOY_HOST: 100.93.9.20
+  DEPLOY_USER: davi
+  DEPLOY_PATH: /home/davi/homepage-site/
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Instalar dependencias do sistema
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends \
+            git curl ca-certificates rsync openssh-client
+          curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
+          apt-get install -y --no-install-recommends nodejs
+
+      - name: Checkout
+        env:
+          GITEA_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SCHEME="${GITHUB_SERVER_URL%%://*}"
+          SERVER="${GITHUB_SERVER_URL#*://}"
+          git init -q .
+          git config --global --add safe.directory "$PWD"
+          git remote add origin \
+            "${SCHEME}://x-access-token:${GITEA_TOKEN}@${SERVER}/${GITHUB_REPOSITORY}.git"
+          git fetch --no-tags origin \
+            "+refs/heads/${GITHUB_REF_NAME}:refs/remotes/origin/${GITHUB_REF_NAME}"
+          git checkout -q -B "${GITHUB_REF_NAME}" "origin/${GITHUB_REF_NAME}"
+
+      - name: Instalar dependencias do projeto
+        run: npm ci
+
+      - name: Build do site
+        run: npm run build -- --configuration production
+
+      - name: Conferir o build
+        run: test -f dist/HomePage/browser/index.html
+
+      - name: Publicar via rsync
+        env:
+          DEPLOY_KEY_PRIMARY: ${{ secrets.DEPLOY_SSH_KEY_B64 }}
+          DEPLOY_KEY_FALLBACK: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          KEY="${DEPLOY_KEY_PRIMARY:-$DEPLOY_KEY_FALLBACK}"
+          install -m 700 -d ~/.ssh
+          if [ -z "$KEY" ]; then
+            echo "nenhum secret de chave definido (DEPLOY_SSH_KEY_B64 ou DEPLOY_SSH_KEY)"
+            exit 1
+          fi
+          # Aceita o PEM cru ou base64: o formato do paste nao deve quebrar o deploy.
+          if printf '%s' "$KEY" | grep -q "BEGIN .*PRIVATE KEY"; then
+            printf '%s\n' "$KEY" > ~/.ssh/deploy_key
+          else
+            printf '%s' "$KEY" | tr -d '[:space:]' | base64 -d > ~/.ssh/deploy_key
+          fi
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keygen -y -f ~/.ssh/deploy_key > /dev/null \
+            || { echo "chave invalida apos decodificar (${#KEY} chars no secret)"; exit 1; }
+          ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+          SSH="ssh -i $HOME/.ssh/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes"
+          TARGET="$DEPLOY_USER@$DEPLOY_HOST"
+
+          rsync -az --delete -e "$SSH" dist/HomePage/browser/ "$TARGET:$DEPLOY_PATH"
+
+          # links.json e montado por fora do site e editado direto no servidor,
+          # entao o deploy so o cria na primeira vez e nunca sobrescreve depois.
+          $SSH "$TARGET" 'mkdir -p ~/homepage-data ~/.config/containers/systemd'
+          rsync -a --ignore-existing -e "$SSH" public/data/links.json \
+            "$TARGET:homepage-data/links.json"
+
+          # O servidor web tambem vem do repositorio: sem isto, destruir o
+          # container deixa o conteudo publicado sem ninguem para servi-lo.
+          rsync -az -e "$SSH" deploy/nginx.conf "$TARGET:homepage-nginx.conf"
+          rsync -az -e "$SSH" deploy/homepage.container \
+            "$TARGET:.config/containers/systemd/homepage.container"
+          $SSH "$TARGET" '
+            export XDG_RUNTIME_DIR=/run/user/$(id -u)
+            systemctl --user daemon-reload
+            systemctl --user restart homepage.service
+            systemctl --user is-active homepage.service'
