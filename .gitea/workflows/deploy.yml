@@ -94,10 +94,14 @@ jobs:
 
           # Os icones tambem moram em data/, porque esse diretorio e montado por
           # cima do site no container — o que vem so pelo build fica invisivel.
-          # Ao contrario do links.json, eles pertencem ao repositorio e sao
-          # sempre sobrescritos.
-          rsync -az --delete -e "$SSH" public/data/.icons/ \
-            "$TARGET:$DEPLOY_ROOT/data/.icons/"
+          # A pasta pode subir vazia e receber icones direto no servidor, entao
+          # o envio e opcional e nunca apaga o que ja esta la.
+          if [ -n "$(ls -A public/data/.icons 2>/dev/null)" ]; then
+            rsync -az -e "$SSH" public/data/.icons/ \
+              "$TARGET:$DEPLOY_ROOT/data/.icons/"
+          else
+            echo "sem icones no repositorio; mantendo os do servidor"
+          fi
 
           # O servidor web tambem vem do repositorio: sem isto, destruir o
           # container deixa o conteudo publicado sem ninguem para servi-lo.

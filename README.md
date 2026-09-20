@@ -43,7 +43,7 @@ No servidor tudo fica sob `~/homepage/`:
 |-- site/        <- o build do Angular (substituido a cada deploy)
 |-- data/
 |   |-- links.json   <- seu, nunca sobrescrito
-|   `-- .icons/      <- do repositorio, sobrescrito a cada deploy
+|   `-- .icons/      <- pode vir do repositorio ou ser preenchido no servidor
 `-- nginx.conf
 ```
 
@@ -84,8 +84,16 @@ O valor e o nome de um arquivo em `public/data/.icons/`, sem a extensao — os
 SVGs vieram de [dashboard-icons](https://github.com/homarr-labs/dashboard-icons)
 e estao versionados aqui para que a pagina nao dependa de um CDN externo.
 
-Para um servico novo, baixe o SVG para essa pasta e use o nome do arquivo. Um
-valor comecando com `http` e usado como URL literal, caso voce prefira apontar
+Para um servico novo, ha dois caminhos:
+
+- versionar o SVG em `public/data/.icons/` e dar push;
+- ou copiar o arquivo direto para `~/homepage/data/.icons/` no servidor.
+
+O deploy nao apaga o que esta no servidor e nem exige que a pasta do repositorio
+exista — ela pode subir vazia e ser preenchida depois. Arquivos de mesmo nome sao
+sobrescritos pelo que vem do repositorio.
+
+Um valor comecando com `http` e usado como URL literal, caso voce prefira apontar
 para fora. Nome inexistente nao quebra o layout: o card aparece so com o texto.
 
 ## Pre-requisitos no servidor (uma vez)
