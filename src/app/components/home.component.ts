@@ -18,7 +18,11 @@ const ICON_BASE = '/data/icons';
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent {
-  public groups$: Observable<{ servidor: Service[]; externos: Service[] }>;
+  public groups$: Observable<{
+    servidor: Service[];
+    administracao: Service[];
+    externos: Service[];
+  }>;
   private baseUrl: string = window.location.hostname;
 
   constructor(
@@ -31,6 +35,7 @@ export class HomeComponent {
     ]).pipe(
       map(([data, status]: [LinksData, Record<string, MonitorStatus>]) => ({
         servidor: (data.servidor || []).map((link) => this.toService(link, status)),
+        administracao: (data.administracao || []).map((link) => this.toService(link, status)),
         externos: (data.externos || []).map((link) => this.toService(link, status)),
       }))
     );

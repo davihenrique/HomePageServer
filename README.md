@@ -61,12 +61,16 @@ systemd:
 
 ## Estrutura do links.json
 
-O arquivo tem dois grupos, um por secao da pagina:
+O arquivo tem tres grupos, um por secao da pagina, nesta ordem:
 
 ```json
 {
   "servidor": [
     { "id": "3", "title": "Gitea", "port": "3000", "icon": "gitea" }
+  ],
+  "administracao": [
+    { "id": "2", "title": "Cockpit", "port": "9090", "https": true,
+      "icon": "cockpit" }
   ],
   "externos": [
     { "id": "e1", "title": "Tailscale",
@@ -75,12 +79,16 @@ O arquivo tem dois grupos, um por secao da pagina:
 }
 ```
 
-Em `servidor` voce informa so a `port` (e `https: true` quando o servico usa
-TLS): o host vem de onde a propria pagina esta aberta, entao os links continuam
-validos pelo IP da Tailscale, pelo hostname local ou por `localhost`.
+Em `servidor` e `administracao` voce informa so a `port` (e `https: true` quando
+o servico usa TLS): o host vem de onde a propria pagina esta aberta, entao os
+links continuam validos pelo IP da Tailscale, pelo hostname local ou por
+`localhost`.
 
 Em `externos` voce informa a `url` completa, porque o destino nao esta no
 servidor.
+
+Uma secao vazia nao aparece na pagina. Os titulos ficam no template
+(`home.component.html`), entao criar uma quarta secao exige mexer no codigo.
 
 ## Status dos servicos (Uptime Kuma)
 

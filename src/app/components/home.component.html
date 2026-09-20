@@ -21,6 +21,15 @@
       </ul>
     </section>
 
+    <section id="administracao-section" *ngIf="groups.administracao.length">
+      <h2 class="section-title">Administração</h2>
+      <ul class="grid">
+        <ng-container
+          *ngTemplateOutlet="cards; context: { $implicit: groups.administracao }"
+        ></ng-container>
+      </ul>
+    </section>
+
     <section id="externos-section" *ngIf="groups.externos.length">
       <h2 class="section-title">Links Externos</h2>
       <ul class="grid">

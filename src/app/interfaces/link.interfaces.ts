@@ -14,6 +14,7 @@ export interface Link {
 
 export interface LinksData {
   servidor: Link[];
+  administracao: Link[];
   externos: Link[];
 }
 
