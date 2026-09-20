@@ -18,7 +18,7 @@ concurrency:
 env:
   DEPLOY_HOST: 100.93.9.20
   DEPLOY_USER: davi
-  DEPLOY_PATH: /home/davi/homepage-site/
+  DEPLOY_ROOT: homepage
 
 jobs:
   build-deploy:
@@ -81,17 +81,20 @@ jobs:
           SSH="ssh -i $HOME/.ssh/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes"
           TARGET="$DEPLOY_USER@$DEPLOY_HOST"
 
-          rsync -az --delete -e "$SSH" dist/HomePage/browser/ "$TARGET:$DEPLOY_PATH"
+          # O rsync nao cria diretorios-pai, entao a arvore precisa existir antes
+          # do primeiro envio.
+          $SSH "$TARGET" "mkdir -p ~/$DEPLOY_ROOT/site ~/$DEPLOY_ROOT/data ~/.config/containers/systemd"
+
+          rsync -az --delete -e "$SSH" dist/HomePage/browser/ "$TARGET:$DEPLOY_ROOT/site/"
 
           # links.json e montado por fora do site e editado direto no servidor,
           # entao o deploy so o cria na primeira vez e nunca sobrescreve depois.
-          $SSH "$TARGET" 'mkdir -p ~/homepage-data ~/.config/containers/systemd'
           rsync -a --ignore-existing -e "$SSH" public/data/links.json \
-            "$TARGET:homepage-data/links.json"
+            "$TARGET:$DEPLOY_ROOT/data/links.json"
 
           # O servidor web tambem vem do repositorio: sem isto, destruir o
           # container deixa o conteudo publicado sem ninguem para servi-lo.
-          rsync -az -e "$SSH" deploy/nginx.conf "$TARGET:homepage-nginx.conf"
+          rsync -az -e "$SSH" deploy/nginx.conf "$TARGET:$DEPLOY_ROOT/nginx.conf"
           rsync -az -e "$SSH" deploy/homepage.container \
             "$TARGET:.config/containers/systemd/homepage.container"
           $SSH "$TARGET" '

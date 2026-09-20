@@ -36,13 +36,23 @@ servidor e sobe um nginx rootless na porta 80 via quadlet.
 
 O servidor web faz parte do repositorio, em `deploy/`:
 
-| Arquivo | Vai para o servidor em | Papel |
-| --- | --- | --- |
-| `deploy/homepage.container` | `~/.config/containers/systemd/` | unit systemd do container |
-| `deploy/nginx.conf` | `~/homepage-nginx.conf` | fallback de rotas e cache |
+No servidor tudo fica sob `~/homepage/`:
 
-O conteudo publicado fica em `~/homepage-site/` e os links em
-`~/homepage-data/links.json`.
+```
+~/homepage/
+|-- site/        <- o build do Angular (substituido a cada deploy)
+|-- data/
+|   `-- links.json
+`-- nginx.conf
+```
+
+A unica peca fora dessa pasta e o quadlet, porque o caminho e imposto pelo
+systemd:
+
+| Arquivo | Vai para o servidor em |
+| --- | --- |
+| `deploy/homepage.container` | `~/.config/containers/systemd/` |
+| `deploy/nginx.conf` | `~/homepage/nginx.conf` |
 
 ## Gerenciar os links sem rebuild
 
@@ -50,7 +60,7 @@ O conteudo publicado fica em `~/homepage-site/` e os links em
 (`--ignore-existing`) e nunca sobrescreve depois, entao basta editar no servidor:
 
 ```bash
-nano ~/homepage-data/links.json
+nano ~/homepage/data/links.json
 ```
 
 A mudanca vale no proximo carregamento da pagina, sem restart e sem deploy.
