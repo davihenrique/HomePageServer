@@ -97,9 +97,14 @@ Os dados vem da status page de slug `home`, pelo endpoint
 (veja `deploy/nginx.conf`). O proxy existe porque uma chamada direta a outra
 porta seria cross-origin e o navegador a bloquearia.
 
-A pagina recarrega o estado a cada 60 segundos. Se o Kuma estiver fora do ar, os
-cards apenas perdem o indicador — nada mais quebra. Link sem `monitor` fica
-exatamente como antes.
+A pagina recarrega o estado a cada 30 segundos e tambem no momento em que a aba
+volta a ficar visivel, sem precisar de F5. Se o Kuma estiver fora do ar, os cards
+apenas perdem o indicador — nada mais quebra. Link sem `monitor` fica exatamente
+como antes.
+
+O quanto a deteccao demora nao depende so daqui: o Uptime Kuma tem o intervalo
+de checagem de cada monitor (60s por padrao), entao uma queda aparece no card
+depois que o proprio Kuma a registrar.
 
 Para descobrir o id de um monitor, abra a status page e leia a resposta de
 `http://100.93.9.20:3001/api/status-page/home`.

@@ -1,28 +1,42 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, timer } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { fromEvent, merge, Observable, of, timer } from 'rxjs';
+import { catchError, filter, map, switchMap } from 'rxjs/operators';
 import { MonitorStatus } from '../interfaces/link.interfaces';
 
 // O nginx encaminha /api/uptime/ para a status page do Uptime Kuma; sem esse
 // proxy a chamada seria cross-origin e o navegador a bloquearia.
 const HEARTBEAT_URL = '/api/uptime/heartbeat/home';
-const REFRESH_MS = 60000;
+const REFRESH_MS = 30000;
 
 @Injectable({ providedIn: 'root' })
 export class StatusService {
   constructor(private http: HttpClient) {}
 
   watch(): Observable<Record<string, MonitorStatus>> {
-    return timer(0, REFRESH_MS).pipe(
-      switchMap(() =>
-        this.http
-          .get<any>(HEARTBEAT_URL, { headers: { 'Cache-Control': 'no-store' } })
-          // O Kuma fora do ar nao pode derrubar a pagina: os cards apenas
-          // ficam sem indicador.
-          .pipe(catchError(() => of(null)))
-      ),
+    // Voltar para a aba deve mostrar o estado atual na hora, sem esperar o
+    // proximo ciclo do timer.
+    const aoVoltarParaAba = fromEvent(document, 'visibilitychange').pipe(
+      filter(() => document.visibilityState === 'visible')
+    );
+
+    return merge(timer(0, REFRESH_MS), aoVoltarParaAba).pipe(
+      switchMap(() => this.buscar()),
       map((body) => this.parse(body))
+    );
+  }
+
+  private buscar(): Observable<any> {
+    // O parametro muda a cada chamada para que nenhum cache do navegador
+    // devolva um estado antigo.
+    return (
+      this.http
+        .get<any>(`${HEARTBEAT_URL}?t=${Date.now()}`, {
+          headers: { 'Cache-Control': 'no-store' },
+        })
+        // O Kuma fora do ar nao pode derrubar a pagina: os cards apenas ficam
+        // sem indicador.
+        .pipe(catchError(() => of(null)))
     );
   }
 
