@@ -23,11 +23,6 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              },
-              {
-                "glob": "**/*",
-                "input": "public/data/.icons",
-                "output": "data/.icons"
               }
             ],
             "styles": [

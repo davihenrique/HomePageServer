@@ -7,7 +7,7 @@ import { Link, Service } from '../interfaces/link.interfaces';
 
 // Os icones sao servidos junto com os dados, e nao por um CDN: a homepage
 // precisa abrir com o servidor sem acesso a internet.
-const ICON_BASE = '/data/.icons';
+const ICON_BASE = '/data/icons';
 
 @Component({
   selector: 'app-home',
@@ -34,7 +34,7 @@ export class HomeComponent {
     );
   }
 
-  // Aceita tanto o nome de um arquivo em /data/.icons quanto uma URL completa,
+  // Aceita tanto o nome de um arquivo em /data/icons quanto uma URL completa,
   // para nao travar o links.json nos icones que vieram no repositorio.
   private iconUrl(icon?: string): string {
     if (!icon) return '';

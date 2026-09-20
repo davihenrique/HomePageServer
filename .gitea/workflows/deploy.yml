@@ -83,7 +83,7 @@ jobs:
 
           # O rsync nao cria diretorios-pai, entao a arvore precisa existir antes
           # do primeiro envio.
-          $SSH "$TARGET" "mkdir -p ~/$DEPLOY_ROOT/site ~/$DEPLOY_ROOT/data/.icons ~/.config/containers/systemd"
+          $SSH "$TARGET" "mkdir -p ~/$DEPLOY_ROOT/site ~/$DEPLOY_ROOT/data/icons ~/.config/containers/systemd"
 
           rsync -az --delete -e "$SSH" dist/HomePage/browser/ "$TARGET:$DEPLOY_ROOT/site/"
 
@@ -96,9 +96,9 @@ jobs:
           # cima do site no container — o que vem so pelo build fica invisivel.
           # A pasta pode subir vazia e receber icones direto no servidor, entao
           # o envio e opcional e nunca apaga o que ja esta la.
-          if [ -n "$(ls -A public/data/.icons 2>/dev/null)" ]; then
-            rsync -az -e "$SSH" public/data/.icons/ \
-              "$TARGET:$DEPLOY_ROOT/data/.icons/"
+          if [ -n "$(ls -A public/data/icons 2>/dev/null)" ]; then
+            rsync -az -e "$SSH" public/data/icons/ \
+              "$TARGET:$DEPLOY_ROOT/data/icons/"
           else
             echo "sem icones no repositorio; mantendo os do servidor"
           fi

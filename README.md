@@ -43,7 +43,7 @@ No servidor tudo fica sob `~/homepage/`:
 |-- site/        <- o build do Angular (substituido a cada deploy)
 |-- data/
 |   |-- links.json   <- seu, nunca sobrescrito
-|   `-- .icons/      <- pode vir do repositorio ou ser preenchido no servidor
+|   `-- icons/       <- pode vir do repositorio ou ser preenchido no servidor
 `-- nginx.conf
 ```
 
@@ -80,14 +80,14 @@ Cada link aponta um icone pelo campo `icon`:
 { "id": "5", "title": "Navidrome", "port": "4533", "icon": "navidrome" }
 ```
 
-O valor e o nome de um arquivo em `public/data/.icons/`, sem a extensao — os
+O valor e o nome de um arquivo em `public/data/icons/`, sem a extensao — os
 SVGs vieram de [dashboard-icons](https://github.com/homarr-labs/dashboard-icons)
 e estao versionados aqui para que a pagina nao dependa de um CDN externo.
 
 Para um servico novo, ha dois caminhos:
 
-- versionar o SVG em `public/data/.icons/` e dar push;
-- ou copiar o arquivo direto para `~/homepage/data/.icons/` no servidor.
+- versionar o SVG em `public/data/icons/` e dar push;
+- ou copiar o arquivo direto para `~/homepage/data/icons/` no servidor.
 
 O deploy nao apaga o que esta no servidor e nem exige que a pasta do repositorio
 exista — ela pode subir vazia e ser preenchida depois. Arquivos de mesmo nome sao
