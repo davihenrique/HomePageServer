@@ -56,6 +56,14 @@
             {{ service.description }}
           </p>
         </div>
+        <span
+          *ngIf="service.monitor"
+          class="card-status"
+          [title]="statusLabel(service.monitor)"
+        >
+          <span class="status-dot" [ngClass]="statusClass(service.monitor)"></span>
+          <span class="status-uptime no-select">{{ uptimeCurto(service.monitor) }}</span>
+        </span>
       </a>
     </li>
   </ng-template>

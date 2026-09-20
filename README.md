@@ -82,6 +82,28 @@ validos pelo IP da Tailscale, pelo hostname local ou por `localhost`.
 Em `externos` voce informa a `url` completa, porque o destino nao esta no
 servidor.
 
+## Status dos servicos (Uptime Kuma)
+
+Um servico que tenha monitor no Uptime Kuma ganha um indicador no card — ponto
+colorido e uptime de 24h — bastando informar o id do monitor:
+
+```json
+{ "id": "1", "title": "Nextcloud", "port": "8090", "icon": "nextcloud",
+  "monitor": "1" }
+```
+
+Os dados vem da status page de slug `home`, pelo endpoint
+`/api/uptime/heartbeat/home`, que o nginx encaminha para o Kuma na porta 3001
+(veja `deploy/nginx.conf`). O proxy existe porque uma chamada direta a outra
+porta seria cross-origin e o navegador a bloquearia.
+
+A pagina recarrega o estado a cada 60 segundos. Se o Kuma estiver fora do ar, os
+cards apenas perdem o indicador — nada mais quebra. Link sem `monitor` fica
+exatamente como antes.
+
+Para descobrir o id de um monitor, abra a status page e leia a resposta de
+`http://100.93.9.20:3001/api/status-page/home`.
+
 ## Gerenciar os links sem rebuild
 
 `links.json` e montado por fora do site. O deploy so o cria na primeira vez
