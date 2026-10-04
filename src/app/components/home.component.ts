@@ -19,7 +19,8 @@ const ICON_BASE = '/data/icons';
 })
 export class HomeComponent {
   public groups$: Observable<{
-    servidor: Service[];
+    podmans: Service[];
+    vms: Service[];
     administracao: Service[];
     externos: Service[];
   }>;
@@ -34,15 +35,16 @@ export class HomeComponent {
       this.statusService.watch(),
     ]).pipe(
       map(([data, status]: [LinksData, Record<string, MonitorStatus>]) => ({
-        servidor: (data.servidor || []).map((link) => this.toService(link, status)),
+        podmans: (data.podmans || []).map((link) => this.toService(link, status)),
+        vms: (data.vms || []).map((link) => this.toService(link, status)),
         administracao: (data.administracao || []).map((link) => this.toService(link, status)),
         externos: (data.externos || []).map((link) => this.toService(link, status)),
       }))
     );
   }
 
-  // Um link externo traz a URL pronta; um servico do servidor so traz a porta,
-  // e o host vem de onde a propria homepage esta aberta.
+  // VMs e links externos trazem a URL pronta; um podman do servidor so traz a
+  // porta, e o host vem de onde a propria homepage esta aberta.
   private toService(link: Link, status: Record<string, MonitorStatus>): Service {
     return {
       id: link.id,

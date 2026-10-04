@@ -3,17 +3,18 @@ export interface Link {
   title: string;
   description?: string;
   icon?: string;
-  // Servicos do proprio servidor: a URL e montada a partir da porta.
+  // Podmans e administracao: a URL e montada a partir da porta.
   port?: string;
   https?: boolean;
-  // Links externos: a URL vem pronta e ignora porta e https.
+  // VMs e links externos: a URL vem pronta e ignora porta e https.
   url?: string;
   // Id do monitor correspondente no Uptime Kuma, quando existir.
   monitor?: string;
 }
 
 export interface LinksData {
-  servidor: Link[];
+  podmans: Link[];
+  vms: Link[];
   administracao: Link[];
   externos: Link[];
 }

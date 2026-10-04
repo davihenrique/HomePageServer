@@ -7,7 +7,7 @@
         style="height: 48px; margin-right: 18px"
       />
       <div class="header-title">
-        <h1>Serviços</h1>
+        <h1>Podmans</h1>
       </div>
     </div>
   </header>
@@ -16,7 +16,16 @@
     <section id="links-section">
       <ul id="links-list" class="grid">
         <ng-container
-          *ngTemplateOutlet="cards; context: { $implicit: groups.servidor }"
+          *ngTemplateOutlet="cards; context: { $implicit: groups.podmans }"
+        ></ng-container>
+      </ul>
+    </section>
+
+    <section id="vms-section" *ngIf="groups.vms.length">
+      <h2 class="section-title">VMs</h2>
+      <ul class="grid">
+        <ng-container
+          *ngTemplateOutlet="cards; context: { $implicit: groups.vms }"
         ></ng-container>
       </ul>
     </section>
@@ -46,7 +55,7 @@
     </ul>
   </ng-template>
 
-  <!-- Os dois grupos usam o mesmo card, entao o markup vive em um lugar so. -->
+  <!-- Todos os grupos usam o mesmo card, entao o markup vive em um lugar so. -->
   <ng-template #cards let-services>
     <li *ngFor="let service of services" class="card">
       <a [href]="service.link" target="_blank" rel="noopener noreferrer" class="card-link">
