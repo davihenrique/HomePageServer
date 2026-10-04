@@ -1,21 +1,54 @@
-[
-  {
-    "id": "1",
-    "title": "Cockpit",
-    "port": "9090",
-    "description": "Acesso ao Cockpit"
-  },
-  {
-    "id": "2",
-    "title": "Nextcloud",
-    "port": "8080",
-    "description": "Painel Nextcloud"
-  },
-  {
-    "id": "3",
-    "title": "Home Assistant",
-    "port": "8123",
-    "description": "Painel Home Assistant",
-    "https": true
-  }
-]
+{
+  "podmans": [
+    {
+      "id": "1",
+      "title": "Servico com monitor",
+      "port": "8080",
+      "description": "Podman no servidor, com status do Uptime Kuma",
+      "icon": "nextcloud",
+      "monitor": "1"
+    },
+    {
+      "id": "2",
+      "title": "Servico sem monitor",
+      "port": "8081",
+      "description": "Podman no servidor, sem indicador de status",
+      "icon": "gitea"
+    }
+  ],
+  "vms": [
+    {
+      "id": "v1",
+      "title": "VM Exemplo",
+      "url": "https://vm-exemplo:9090",
+      "description": "Cockpit da VM",
+      "icon": "alma-linux"
+    }
+  ],
+  "administracao": [
+    {
+      "id": "a1",
+      "title": "Cockpit",
+      "port": "9090",
+      "description": "Administracao do servidor",
+      "https": true,
+      "icon": "cockpit"
+    },
+    {
+      "id": "a2",
+      "title": "Uptime Kuma",
+      "port": "3001",
+      "description": "Monitoramento dos servicos",
+      "icon": "uptime-kuma"
+    }
+  ],
+  "externos": [
+    {
+      "id": "e1",
+      "title": "Tailscale",
+      "url": "https://console.tailscale.com/admin/machines",
+      "description": "Painel da rede Tailscale",
+      "icon": "tailscale"
+    }
+  ]
+}
